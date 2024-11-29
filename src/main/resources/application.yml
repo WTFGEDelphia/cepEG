@@ -1,0 +1,44 @@
+server:
+  port: 8080
+
+spring:
+  # MariaDB配置
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://localhost:3306/cep_engine
+    username: root
+    password: root
+  
+  # Redis配置
+  redis:
+    host: localhost
+    port: 6379
+    database: 0
+    
+  # Kafka配置
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: cep-engine-group
+      auto-offset-reset: latest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+# MyBatis配置
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.example.cepengine.entity
+  configuration:
+    map-underscore-to-camel-case: true
+
+# 应用配置
+app:
+  kafka:
+    input-topic: raw-data
+    output-topic: processed-data
+  disruptor:
+    buffer-size: 1024
+    consumer-count: 4
