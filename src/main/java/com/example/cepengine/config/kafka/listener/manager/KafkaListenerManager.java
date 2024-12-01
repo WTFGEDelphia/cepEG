@@ -1,4 +1,4 @@
-package com.example.cepengine.kafka.listener;
+package com.example.cepengine.config.kafka.listener.manager;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.config.KafkaListenerEndpointRegistry;

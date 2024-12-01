@@ -1,4 +1,4 @@
-package com.example.cepengine.disruptor;
+package com.example.cepengine.config.disruptor;
 
 import lombok.Data;
 

@@ -1,4 +1,4 @@
-package com.example.cepengine.kafka.listener;
+package com.example.cepengine.config.kafka.listener;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

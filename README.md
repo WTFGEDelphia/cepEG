@@ -12,6 +12,47 @@
 - MariaDB
 - MyBatis
 
+## 项目目录结构
+
+```
+src/main/java/com/example/cepengine/
+│
+├── config/                     # 配置类目录
+│   ├── kafka/                  # Kafka相关配置
+│   │   ├── consumer/           # Kafka消费者配置
+│   │   ├── producer/           # Kafka生产者配置
+│   │   └── listener/           # Kafka监听器配置
+│   │       └── manager/        # Kafka监听器管理
+│   │
+│   └── disruptor/              # Disruptor配置
+│       ├── DataEvent.java      # 事件数据模型
+│       ├── DataEventFactory.java  # 事件工厂
+│       ├── DataEventHandler.java  # 事件处理器
+│       └── DisruptorConfig.java   # Disruptor配置
+│
+├── controller/                 # 控制器层
+│   └── SiddhiGeneratorController.java  # Siddhi语法生成控制器
+│
+├── service/                    # 服务层
+│   ├── SiddhiGeneratorService.java  # Siddhi语法生成服务
+│   └── SiddhiRuleService.java   # Siddhi规则服务
+│
+├── domain/                     # 领域模型
+│   └── TopicField.java         # 通用主题字段模型
+│
+├── dto/                        # 数据传输对象
+│   └── SiddhiGenerateRequest.java  # Siddhi语法生成请求DTO
+│
+├── entity/                     # 持久化实体
+│   └── ProcessedData.java      # 处理后的数据实体
+│
+├── enums/                      # 枚举类
+│   └── SiddhiTypeEnum.java     # Siddhi类型枚举
+│
+└── repository/                 # 数据访问层
+    └── ProcessedDataRepository.java  # 处理数据仓库
+```
+
 ## 系统架构
 
 ### 核心组件
@@ -80,6 +121,102 @@
    - 使用Disruptor实现高吞吐量
    - Redis缓存减少数据库访问
    - 多线程并行处理
+
+5. **Siddhi语法生成**
+   - 自动生成Siddhi流定义
+   - 支持Kafka Topic字段映射
+   - 提供示例查询生成
+   - REST API接口
+
+### Siddhi语法生成API
+
+#### 1. 生成流定义
+
+```bash
+POST /api/siddhi/stream
+```
+
+请求示例：
+```json
+{
+  "topicName": "sensor-data",
+  "fields": [
+    {
+      "fieldName": "timestamp",
+      "fieldType": "long",
+      "isTimeField": true
+    },
+    {
+      "fieldName": "temperature",
+      "fieldType": "double"
+    },
+    {
+      "fieldName": "deviceId",
+      "fieldType": "string"
+    }
+  ]
+}
+```
+
+响应示例：
+```sql
+@source(type='kafka',
+       topic.list='sensor-data',
+       partition.no.list='0',
+       threading.option='single.thread',
+       group.id='${kafka.consumer.group.id}',
+       bootstrap.servers='${kafka.bootstrap.servers}',
+       @map(type='json'))
+define stream SensorDataStream (timestamp long, temperature double, deviceId string);
+```
+
+#### 2. 生成示例查询
+
+```bash
+POST /api/siddhi/query
+```
+
+请求示例：
+```json
+{
+  "topicName": "sensor-data",
+  "streamName": "SensorDataStream",
+  "fields": [
+    {
+      "fieldName": "timestamp",
+      "fieldType": "long",
+      "isTimeField": true
+    },
+    {
+      "fieldName": "temperature",
+      "fieldType": "double"
+    },
+    {
+      "fieldName": "deviceId",
+      "fieldType": "string"
+    }
+  ]
+}
+```
+
+响应示例：
+```sql
+@info(name='sensor_data_example_query')
+from SensorDataStream#window.time(5 min)
+select timestamp, temperature, deviceId
+insert into OutputStreamName;
+```
+
+### 支持的数据类型映射
+
+| Java/Kafka类型 | Siddhi类型 |
+|---------------|------------|
+| string        | string     |
+| integer/int   | int        |
+| long          | long       |
+| double/float  | double     |
+| boolean       | bool       |
+| timestamp     | long       |
 
 ## 快速开始
 

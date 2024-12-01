@@ -1,4 +1,4 @@
-package com.example.cepengine.disruptor;
+package com.example.cepengine.config.disruptor;
 
 import com.lmax.disruptor.EventFactory;
 import org.springframework.stereotype.Component;

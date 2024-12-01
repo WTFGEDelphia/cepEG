@@ -1,4 +1,4 @@
-package com.example.cepengine.disruptor;
+package com.example.cepengine.config.disruptor;
 
 import com.example.cepengine.entity.ProcessedData;
 import com.example.cepengine.service.SiddhiRuleService;
